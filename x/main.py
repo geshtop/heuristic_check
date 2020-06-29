@@ -50,7 +50,9 @@ def manhattan_distance(instance1, instance2):
     # for each point, finding distance
     # to rest of the point
     for i in range(n):
-        sum += abs(float(instance1[i]) - float(instance2[i]))
+        for j in range(i + 1, n):
+            sum += (abs( float(instance1[i]) - float(instance1[j])) +
+                    abs(float(instance2[i]) - float(instance2[j])))
     return sum
 
 
