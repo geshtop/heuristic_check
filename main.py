@@ -11,18 +11,20 @@ from prettytable import PrettyTable
 
 bcolors = bcolors.bcolors()
 
-
+#Class like enum of the heuristics distance avilable
 class Heuristic:
     EUCLIDEAN = 0
     MANHATTAN = 1
     HAMMING = 2
 
+#class with ctor that has distance and tag properties
 class distClass:
     def __init__(self, dist=-1, tag='-'):
         self.dist = dist  # distance of current point from test point
         self.tag = tag  # tag of current point
 
 
+#calculate the distance between 2 vectors by selected heuristic
 def calculate_distance(instance1, instance2, heuristic: Heuristic):
     if (heuristic == Heuristic.EUCLIDEAN):
         return euclidean_distance(instance1, instance2)
@@ -31,7 +33,7 @@ def calculate_distance(instance1, instance2, heuristic: Heuristic):
     if (heuristic == Heuristic.HAMMING):
         return hamming_distance(instance1, instance2)
 
-# check the distances between 2 vectors
+# check the euclidean distances between 2 vectors
 def euclidean_distance(instance1, instance2):
     distance = 0
     length = len(instance1)
@@ -43,7 +45,7 @@ def euclidean_distance(instance1, instance2):
     return math.sqrt(distance)
 
 
-# Manhattan distance between all
+# Manhattan distance between vectors
 def manhattan_distance(instance1, instance2):
     n = len(instance1)-1
     sum = 0
@@ -54,16 +56,17 @@ def manhattan_distance(instance1, instance2):
     return sum
 
 
-
+# hamming distance between vectors
 def hamming_distance(instance1, instance2):
     n = len(instance1)
     return sum(c1 != c2 for c1, c2 in zip(instance1[:n-1], instance2[:n-1]))
 
+# print just the vectors
 def print_vector(vector):
     # add comma to the list
     print('[', ','.join(map(str, vector[:-1])), ']', end="")
 
-
+# print the vector with his tag
 def print_vector_with_tag(vector):
     length = len(vector)
     print('The vector', end=" ")
@@ -113,7 +116,7 @@ def calculate_distance_vector_and_dataset(vector, ds, heuristic: Heuristic):
     eucDistances.sort(key=lambda x: x.dist)
     return eucDistances
 
-
+# calculate the distance between vector and datasets with printing options
 def calc_distance_vector_from_ds(vector, ds, output_print, heuristic: Heuristic):
     if (output_print):
         print("The vector:", end="")
@@ -128,15 +131,18 @@ def calc_distance_vector_from_ds(vector, ds, output_print, heuristic: Heuristic)
         print(t)
     return distance_ds
 
-
+#get the top 1 tag from a sorted dataset
 def calc_the_tag_value(distance_sorted_ds, k_value):
-    # find the most tag in the table that sorted alrady  and return the best tag
+    # find the most tag in the table that sorted already  and return the best tag
     counts = Counter([o.tag for o in distance_sorted_ds[:k_value]])
     # return just the top value
     return counts.most_common(1)[0][0]
 
-
-def calc_calculated_tags_from_datasets(original_ds, tester_ds, headers, k_value, output_print, heuristic: Heuristic):
+"""
+main function that getting the original dataset and tester dataset k value and heuristic
+and return the tester_ds data with accurance (ממוצע של תוצאה נכונה )
+"""
+def  calc_calculated_tags_from_datasets(original_ds, tester_ds, headers, k_value, output_print, heuristic: Heuristic):
     true_founded = 0
     # wrond_founded =0
     accuracy=0;
@@ -157,7 +163,9 @@ def calc_calculated_tags_from_datasets(original_ds, tester_ds, headers, k_value,
     accuracy = true_founded / rows
     return tester_ds, accuracy
 
-
+"""
+this function based on calc_calculated_tags_from_datasets and write the result to csv file
+"""
 def write_kx_to_csv(original_file_path, tester_file_path, k_value, output_print, heuristic: Heuristic, out_file_name):
     original_ds, original_headers = read_file(original_file_path)
     ds_test, tester_headers = read_file(tester_file_path)
@@ -166,6 +174,10 @@ def write_kx_to_csv(original_file_path, tester_file_path, k_value, output_print,
     write_file(out_file_name, tester_with_calculation_tag)
     return accuracy
 
+
+"""
+helper function for run on 3 k value for selected heuristic
+"""
 def helper_write_multi_ks(heuristic: Heuristic,  heuristic_name,  first_letter):
     best_accuracy=1
     accuracy1 = write_kx_to_csv('mytrain.csv', 'mytest.csv', 1, 0, heuristic, 'csv/mytest1' + first_letter + '.csv')
